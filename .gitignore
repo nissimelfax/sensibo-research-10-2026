@@ -1,0 +1,45 @@
+# ===== SECRETS — NEVER COMMIT =====
+# Private keys & certificates (regenerate with lab/gen-certs.sh)
+*.pem
+*.key
+*.crt
+*.csr
+*_key*
+*private*
+
+# TLS session keys
+sslkeys*.log
+*keylog*
+SSLKEYLOGFILE
+
+# Credentials / tokens / cookies / env
+.env
+.env.*
+*secret*
+*token*
+*cookie*
+*session*
+credentials*
+
+# ===== RAW CAPTURES =====
+# Commit ONLY redacted copies, named *_redacted.pcapng inside evidence/
+*.pcap
+*.pcapng
+*.bin
+ir_capture.bin
+!evidence/*_redacted.pcapng
+!evidence/*_redacted.pcap
+
+# ===== OS / EDITOR JUNK =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.obsidian/
+
+# Raw screenshots extracted from the Word doc — review & REDACT before committing.
+# Put redacted copies in images/ (root) and commit those instead.
+images/from-docx/
