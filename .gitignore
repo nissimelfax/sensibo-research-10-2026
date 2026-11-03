@@ -30,6 +30,15 @@ ir_capture.bin
 !evidence/*_redacted.pcapng
 !evidence/*_redacted.pcap
 
+# ===== RAW VIDEO / SCREEN RECORDINGS =====
+# May show device id, repo URL, paths, etc. Commit ONLY redacted exports.
+video/
+*.mp4
+*.mov
+*.mkv
+*.webm
+!evidence/*_redacted.mp4
+
 # ===== OS / EDITOR JUNK =====
 .DS_Store
 Thumbs.db

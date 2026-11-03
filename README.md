@@ -43,7 +43,6 @@ nmap -T4 -A -p- <device-ip>    # full port / service scan
 | Device IP   | `192.168.1.121` (private)                   |
 | MAC         | `<redacted>`                                |
 | Open ports  | **None** (no externally reachable services) |
-| Fingerprint | embedded `lwIP` TCP/IP stack                |
 
 **Observation:** the device's **DNS query IDs do not appear to be randomized**, which makes DNS spoofing trivial - a useful precondition for the attack below.
 
@@ -127,7 +126,7 @@ To verify that the leaked credentials are actually usable, I connected to the **
 
 1. **Authentication succeeded.** The broker accepted the credentials (`CONNECT rc = 0`), confirming they are valid against the production broker - not just inside my lab.
 2. **Eavesdropping works.** Subscribing to the device's topic tree (`things/1/<device-id>/#`) returned the **live stream of the device's traffic** - the IR command waveforms.
-3. Operating the AC from the app produced a continuous series of messages received in real time, i.e. I could observe exactly **when the AC turned on/off and with what settings.**
+3. Operating the AC from the app produced a continuous series of messages received in real time, i.e. I could observe exactly **when the AC turned on/off.**
 4. **Command injection is blocked.** Attempting to publish to the command topics (`.../cmd`, `.../ir/...`) had no effect. A two-client test (one subscriber and one publisher, both using the device credentials) showed that messages published under the device identity were **never routed**, while genuine cloud traffic was received normally. The device identity is therefore **subscribe-only** on the command topics (broker-side ACL).
 
 **Conclusion:** the leaked credentials are **not inert**. They grant real **eavesdropping** capability over the victim device - a confidentiality breach exposing usage and occupancy patterns - but **not control**, since the ACL blocks publishing commands.
@@ -173,13 +172,12 @@ An attempt to run a stable proxy between the device and the real Sensibo server 
 1. **Enforce proper certificate-chain validation and/or pinning at the TLS layer** - fixes the root cause.
 2. **Gate credential transmission on successful server authentication** - never send the MQTT `CONNECT` before the server's identity is verified.
 3. **Randomize DNS query IDs** to harden against DNS spoofing.
-4. Consider **token rotation/revocation** available to the user after a suspected leak.
 
 ---
 
 ## 12. Responsible Disclosure
 
-This issue was reported to Sensibo on **2026-10-09** via their security contact. The repository is kept private pending a reasonable remediation window; public disclosure will follow a coordinated-disclosure timeline. All device credentials and identifiers are **redacted**, and no exploit code enabling trivial reuse is included.
+This issue was reported to Sensibo on **2026-10-09**. All device credentials and identifiers are **redacted** from this report, and no exploit code enabling trivial reuse is included.
 
 ---
 
@@ -187,7 +185,7 @@ This issue was reported to Sensibo on **2026-10-09** via their security contact.
 
 | #        | Type       | Description                                                                                                                                                       |
 | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E0       | screenshot | flow diagram that describe the device communication method                                                                                                        |
+| E0       | screenshot | flow diagram that describes the device communication method                                                                                                        |
 | E1       | screenshot | Server certificate details (private Sensibo CA, CN=*.sensibo.com)                                                                                                 |
 | E2       | screenshot | altered Server certificate details (private Sensibo CA, CN=*.sensi**g**o.com)                                                                                     |
 | E3       | screenshot | Cert-variation tests (random CN / O) - handshake still completes                                                                                                  |
